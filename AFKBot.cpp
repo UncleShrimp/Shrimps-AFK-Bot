@@ -752,6 +752,7 @@ void AUTTreePunchBot() {
 	}
 }
 void selectBot() {
+	system("cls");
 	cout << "   _______  _______  __  __      ______  _______  _______  \n";
 	cout << "  |   _   ||    ___||  |/  |    |   __  |       ||_     _| \n";
 	cout << "  |       ||    ___||     <     |   __ <|   -   |  |   |   \n";
@@ -774,6 +775,7 @@ void selectBot() {
 		break;
 	default:
 		cout << endl << "Unknown selection" << endl << endl;
+		Sleep(1000);
 		selectBot();
 		break;
 	}
