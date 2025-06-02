@@ -1,0 +1,12 @@
+cmake_minimum_required(VERSION  4.0.2)  # Проверка версии CMake.
+          # Если версия установленой программы
+          # старее указаной, произайдёт аварийный выход.
+set(CMAKE_CXX_STANDARD 17)
+
+project(AFKBot)   # Название проекта
+
+set(SOURCE_EXE AFKBot.cpp)  # Установка переменной со списком исходников для исполняемого файла
+
+add_executable(AFKBot ${SOURCE_EXE}) # Создает исполняемый файл с именем main
+
+target_link_libraries(AFKBot)  # Линковка программы с библиотекой

@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Uncle_Shrimp\source\repos\AFKBot\AFKBot\CMakeFiles\82d898926df8af2d1e92886c6343c305\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{696F30CE-E553-3B14-95E0-1F5DE46EDB45}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

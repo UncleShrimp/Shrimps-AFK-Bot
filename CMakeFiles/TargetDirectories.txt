@@ -1,0 +1,3 @@
+C:/Users/Uncle_Shrimp/source/repos/AFKBot/AFKBot/CMakeFiles/AFKBot.dir
+C:/Users/Uncle_Shrimp/source/repos/AFKBot/AFKBot/CMakeFiles/ALL_BUILD.dir
+C:/Users/Uncle_Shrimp/source/repos/AFKBot/AFKBot/CMakeFiles/ZERO_CHECK.dir
