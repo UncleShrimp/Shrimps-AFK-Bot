@@ -2,13 +2,14 @@
 #include <iostream>
 #include <conio.h>
 #include <vector>
-#include <cstdlib>
 #include <fstream>
 #include <string>
 #include <random>
 #include <thread>
 #include <cmath>
 #include <chrono>
+#include <cctype>
+#include <cstdlib>
 
 using namespace std;
 
@@ -37,12 +38,30 @@ int randomMTInRange(int start, int end) {
 	return random_number;
 }
 
+char setupSetupButton() {
+	cout << "Print the position setup button (characters only), please." << endl;
+	char ret;
+	while (1) {
+		cin >> ret;
+		if ((ret >= 'A' && ret <= 'Z') || (ret >= 'a' && ret <= 'z')) {
+			break;
+		}
+		else {
+			cout << "Wrong input!" << endl;
+		}
+	}
+	return ret;
+}
+
 void setupPos() {
+	char setupChar = 0;
 	POINT xypos;
 	cout << "Enter amount of points, please : " << endl;
 	int i = 3;
 	cin >> i;
-	cout << "Setting up. Press 'l' to set the point for clicking, please" << endl;
+	setupChar = setupSetupButton();
+	cout << "Setting up. Press '"<<setupChar<<"' to set the point for clicking, please" << endl;
+	cout << "Select this window below and then press the setup button" << endl;
 	cout << "Wait 3 sec please" << endl;
 	Sleep(3000);
 	//HideConsole();
@@ -50,7 +69,7 @@ void setupPos() {
 	ShowWindow(GetConsoleWindow(), SW_SHOW);
 	while (i > 0) {
 		char g = _getch();
-		if (g == 'L' || g == 'l') {
+		if (g == setupChar || g==toupper(setupChar) || g==tolower(setupChar)) {
 			GetCursorPos(&xypos);
 			cout << "Setup Num " << i << "; Set X = " << xypos.x << "; Set Y = " << xypos.y << endl;
 			vector<int> t = { xypos.x , xypos.y };
