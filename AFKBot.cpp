@@ -10,15 +10,45 @@
 #include <chrono>
 #include <cctype>
 #include <cstdlib>
+#include <algorithm>
 
 using namespace std;
 
 vector<vector<int>> out;
 INPUT ip;
 
-enum directions { BACKWARD = 0, FORWARD = 1, LEFT = 2, RIGHT = 3, DIAGONALBACKLEFT = 4, DIAGONALBACKRIGHT = 5, DIAGONALFORWARDLEFT = 6, DIAGONALFORWARDRIGHT = 7, COUNT };
-enum toJump { JUMP = 0, DONTJUMP = 1, JUMPCOUNT };
-enum toLook { LOOK = 0, DONTLOOK = 1, LOOKCOUNT };
+class minecraftEnums {
+public:
+	enum directions { BACKWARD = 0, FORWARD = 1, LEFT = 2, RIGHT = 3, DIAGONALBACKLEFT = 4, DIAGONALBACKRIGHT = 5, DIAGONALFORWARDLEFT = 6, DIAGONALFORWARDRIGHT = 7, COUNT };
+	enum toJump { JUMP = 0, DONTJUMP = 1, JUMPCOUNT };
+	enum toLook { LOOK = 0, DONTLOOK = 1, LOOKCOUNT };
+};
+class AUTvars {
+private:
+	bool enableSpecs = true;
+public:
+	vector<char> possibleInputs = { 'Y', 'y', 'N', 'n' };
+	bool hasViableInput(char &input) {
+		return any_of(possibleInputs.begin(), possibleInputs.end(), [&input](char i) {return input == i;});
+	}
+	void setEnableSpecs(char input) {
+		switch (input) {
+		case 'Y':
+			enableSpecs = true;
+			break;
+		case 'y':
+			enableSpecs = true;
+			break;
+		case 'N':
+			enableSpecs = false;
+			break;
+		case 'n':
+			enableSpecs = false;
+			break;
+		}
+	}
+	enum specialMoves {EMove = 0, RMove = 1, TMove = 3, YMove = 4, SPECMOVESCOUNT};
+};
 
 int randomMTInRange(int start, int end) {
 	std::random_device rd; // Obtain a random seed from the OS
@@ -124,16 +154,16 @@ void randomLook() {
 
 	std::mt19937 generator(std::time(nullptr));
 
-	std::uniform_int_distribution<int> distribution(0, static_cast<int>(toLook::LOOKCOUNT) - 1);
+	std::uniform_int_distribution<int> distribution(0, static_cast<int>(minecraftEnums::toLook::LOOKCOUNT) - 1);
 
-	toLook randDir = static_cast<toLook>(distribution(generator));
+	minecraftEnums::toLook randDir = static_cast<minecraftEnums::toLook>(distribution(generator));
 
 	POINT cursorPos;
 	GetCursorPos(&cursorPos);
 	int rand = randomMTInRange(0, 400);
 	switch (randDir)
 	{
-	case LOOK:
+	case minecraftEnums::LOOK:
 		Sleep(100);
 		cout << "	~LOOK" << endl;
 		for (int i = 0; i <= rand / 24; i++) {
@@ -143,7 +173,7 @@ void randomLook() {
 
 		//cout << "MX = " << cursorPos.x << " ; MY = " << cursorPos.y << endl;
 		break;
-	case DONTLOOK:
+	case minecraftEnums::DONTLOOK:
 		break;
 	default:
 		break;
@@ -219,16 +249,16 @@ void randomJump(int walkDur) {
 
 	std::mt19937 generator(std::time(nullptr));
 
-	std::uniform_int_distribution<int> distribution(0, static_cast<int>(toJump::JUMPCOUNT) - 1);
+	std::uniform_int_distribution<int> distribution(0, static_cast<int>(minecraftEnums::toJump::JUMPCOUNT) - 1);
 
-	toJump randDir = static_cast<toJump>(distribution(generator));
+	minecraftEnums::toJump randDir = static_cast<minecraftEnums::toJump>(distribution(generator));
 
 	switch (randDir)
 	{
-	case JUMP:
+	case minecraftEnums::JUMP:
 		jump(walkDur);
 		break;
-	case DONTJUMP:
+	case minecraftEnums::DONTJUMP:
 		break;
 	default:
 		break;
@@ -346,13 +376,13 @@ void walkDiagonalBackLeft(int walkDur, int delayBetweenSteps) {
 
 	std::mt19937 generator(std::time(nullptr));
 
-	std::uniform_int_distribution<int> distribution(0, static_cast<int>(directions::DIAGONALBACKLEFT) - 1);
+	std::uniform_int_distribution<int> distribution(0, static_cast<int>(minecraftEnums::directions::DIAGONALBACKLEFT) - 1);
 
-	directions randDir = static_cast<directions>(distribution(generator));
+	minecraftEnums::directions randDir = static_cast<minecraftEnums::directions>(distribution(generator));
 
 	switch (randDir)
 	{
-	case directions::BACKWARD:
+	case minecraftEnums::directions::BACKWARD:
 		cout << "MOVING BACKWARD" << endl;
 		randomLook();;
 		walkBackward(walkDur);
@@ -360,14 +390,14 @@ void walkDiagonalBackLeft(int walkDur, int delayBetweenSteps) {
 		Sleep(delayBetweenSteps);
 		cout << "	Proceeding further2" << endl;
 		break;
-	case directions::FORWARD:
+	case minecraftEnums::directions::FORWARD:
 		cout << "MOVING FORWARD" << endl;
 		randomLook();;
 		walkForward(walkDur);
 		Sleep(delayBetweenSteps);
 		cout << "Proceeding further" << endl;
 		break;
-	case directions::LEFT:
+	case minecraftEnums::directions::LEFT:
 		cout << "MOVING LEFT" << endl;
 		randomLook();;
 		walkLeft(walkDur);
@@ -375,7 +405,7 @@ void walkDiagonalBackLeft(int walkDur, int delayBetweenSteps) {
 		Sleep(delayBetweenSteps);
 		cout << "	Proceeding further2" << endl;
 		break;
-	case directions::RIGHT:
+	case minecraftEnums::directions::RIGHT:
 		cout << "MOVING RIGHT" << endl;
 		randomLook();;
 		walkRight(walkDur);
@@ -421,13 +451,13 @@ void walkDiagonalBackRight(int walkDur, int delayBetweenSteps) {
 
 	std::mt19937 generator(std::time(nullptr));
 
-	std::uniform_int_distribution<int> distribution(0, static_cast<int>(directions::DIAGONALBACKLEFT) - 1);
+	std::uniform_int_distribution<int> distribution(0, static_cast<int>(minecraftEnums::directions::DIAGONALBACKLEFT) - 1);
 
-	directions randDir = static_cast<directions>(distribution(generator));
+	minecraftEnums::directions randDir = static_cast<minecraftEnums::directions>(distribution(generator));
 
 	switch (randDir)
 	{
-	case directions::BACKWARD:
+	case minecraftEnums::directions::BACKWARD:
 		cout << "MOVING BACKWARD" << endl;
 		randomLook();;
 		walkBackward(walkDur);
@@ -435,14 +465,14 @@ void walkDiagonalBackRight(int walkDur, int delayBetweenSteps) {
 		Sleep(delayBetweenSteps);
 		cout << "	Proceeding further2" << endl;
 		break;
-	case directions::FORWARD:
+	case minecraftEnums::directions::FORWARD:
 		cout << "MOVING FORWARD" << endl;
 		randomLook();;
 		walkForward(walkDur);
 		Sleep(delayBetweenSteps);
 		cout << "Proceeding further" << endl;
 		break;
-	case directions::LEFT:
+	case minecraftEnums::directions::LEFT:
 		cout << "MOVING LEFT" << endl;
 		randomLook();;
 		walkLeft(walkDur);
@@ -450,7 +480,7 @@ void walkDiagonalBackRight(int walkDur, int delayBetweenSteps) {
 		Sleep(delayBetweenSteps);
 		cout << "	Proceeding further2" << endl;
 		break;
-	case directions::RIGHT:
+	case minecraftEnums::directions::RIGHT:
 		cout << "MOVING RIGHT" << endl;
 		randomLook();;
 		walkRight(walkDur);
@@ -496,13 +526,13 @@ void walkDiagonalForwardLeft(int walkDur, int delayBetweenSteps) {
 
 	std::mt19937 generator(std::time(nullptr));
 
-	std::uniform_int_distribution<int> distribution(0, static_cast<int>(directions::DIAGONALBACKLEFT) - 1);
+	std::uniform_int_distribution<int> distribution(0, static_cast<int>(minecraftEnums::directions::DIAGONALBACKLEFT) - 1);
 
-	directions randDir = static_cast<directions>(distribution(generator));
+	minecraftEnums::directions randDir = static_cast<minecraftEnums::directions>(distribution(generator));
 
 	switch (randDir)
 	{
-	case directions::BACKWARD:
+	case minecraftEnums::directions::BACKWARD:
 		cout << "MOVING BACKWARD" << endl;
 		randomLook();;
 		walkBackward(walkDur);
@@ -510,14 +540,14 @@ void walkDiagonalForwardLeft(int walkDur, int delayBetweenSteps) {
 		Sleep(delayBetweenSteps);
 		cout << "	Proceeding further2" << endl;
 		break;
-	case directions::FORWARD:
+	case minecraftEnums::directions::FORWARD:
 		cout << "MOVING FORWARD" << endl;
 		randomLook();;
 		walkForward(walkDur);
 		Sleep(delayBetweenSteps);
 		cout << "Proceeding further" << endl;
 		break;
-	case directions::LEFT:
+	case minecraftEnums::directions::LEFT:
 		cout << "MOVING LEFT" << endl;
 		randomLook();;
 		walkLeft(walkDur);
@@ -525,7 +555,7 @@ void walkDiagonalForwardLeft(int walkDur, int delayBetweenSteps) {
 		Sleep(delayBetweenSteps);
 		cout << "	Proceeding further2" << endl;
 		break;
-	case directions::RIGHT:
+	case minecraftEnums::directions::RIGHT:
 		cout << "MOVING RIGHT" << endl;
 		randomLook();;
 		walkRight(walkDur);
@@ -571,13 +601,13 @@ void walkDiagonalForwardRight(int walkDur, int delayBetweenSteps) {
 
 	std::mt19937 generator(std::time(nullptr));
 
-	std::uniform_int_distribution<int> distribution(0, static_cast<int>(directions::DIAGONALBACKLEFT) - 1);
+	std::uniform_int_distribution<int> distribution(0, static_cast<int>(minecraftEnums::directions::DIAGONALBACKLEFT) - 1);
 
-	directions randDir = static_cast<directions>(distribution(generator));
+	minecraftEnums::directions randDir = static_cast<minecraftEnums::directions>(distribution(generator));
 
 	switch (randDir)
 	{
-	case directions::BACKWARD:
+	case minecraftEnums::directions::BACKWARD:
 		cout << "MOVING BACKWARD" << endl;
 		randomLook();;
 		walkBackward(walkDur);
@@ -585,14 +615,14 @@ void walkDiagonalForwardRight(int walkDur, int delayBetweenSteps) {
 		Sleep(delayBetweenSteps);
 		cout << "	Proceeding further2" << endl;
 		break;
-	case directions::FORWARD:
+	case minecraftEnums::directions::FORWARD:
 		cout << "MOVING FORWARD" << endl;
 		randomLook();;
 		walkForward(walkDur);
 		Sleep(delayBetweenSteps);
 		cout << "Proceeding further" << endl;
 		break;
-	case directions::LEFT:
+	case minecraftEnums::directions::LEFT:
 		cout << "MOVING LEFT" << endl;
 		randomLook();;
 		walkLeft(walkDur);
@@ -600,7 +630,7 @@ void walkDiagonalForwardRight(int walkDur, int delayBetweenSteps) {
 		Sleep(delayBetweenSteps);
 		cout << "	Proceeding further2" << endl;
 		break;
-	case directions::RIGHT:
+	case minecraftEnums::directions::RIGHT:
 		cout << "MOVING RIGHT" << endl;
 		randomLook();;
 		walkRight(walkDur);
@@ -617,13 +647,13 @@ void RandomWalk(int duration, int walkDur, int delayBetweenSteps) {
 
 	std::mt19937 generator(std::time(nullptr));
 
-	std::uniform_int_distribution<int> distribution(0, static_cast<int>(directions::COUNT) - 1);
+	std::uniform_int_distribution<int> distribution(0, static_cast<int>(minecraftEnums::directions::COUNT) - 1);
 
-	directions randDir = static_cast<directions>(distribution(generator));
+	minecraftEnums::directions randDir = static_cast<minecraftEnums::directions>(distribution(generator));
 	cout << randDir << endl;
 	switch (randDir)
 	{
-	case directions::BACKWARD:
+	case minecraftEnums::directions::BACKWARD:
 		cout << "MOVING BACKWARD" << endl;
 		randomLook();;
 		walkBackward(walkDur);
@@ -631,14 +661,14 @@ void RandomWalk(int duration, int walkDur, int delayBetweenSteps) {
 		Sleep(delayBetweenSteps);
 		cout << "Proceeding further" << endl;
 		break;
-	case directions::FORWARD:
+	case minecraftEnums::directions::FORWARD:
 		cout << "MOVING FORWARD" << endl;
 		randomLook();;
 		walkForward(walkDur);
 		Sleep(delayBetweenSteps);
 		cout << "Proceeding further" << endl;
 		break;
-	case directions::LEFT:
+	case minecraftEnums::directions::LEFT:
 		cout << "MOVING LEFT" << endl;
 		randomLook();;
 		walkLeft(walkDur);
@@ -646,7 +676,7 @@ void RandomWalk(int duration, int walkDur, int delayBetweenSteps) {
 		Sleep(delayBetweenSteps);
 		cout << "Proceeding further" << endl;
 		break;
-	case directions::RIGHT:
+	case minecraftEnums::directions::RIGHT:
 		cout << "MOVING RIGHT" << endl;
 		randomLook();;
 		walkRight(walkDur);
@@ -654,28 +684,28 @@ void RandomWalk(int duration, int walkDur, int delayBetweenSteps) {
 		Sleep(delayBetweenSteps);
 		cout << "Proceeding further" << endl;
 		break;
-	case directions::DIAGONALBACKLEFT:
+	case minecraftEnums::directions::DIAGONALBACKLEFT:
 		cout << "MOVING DIAGONALBACKLEFT" << endl;
 		randomLook();;
 		walkDiagonalBackLeft(walkDur, delayBetweenSteps);
 		cout << "Random ended" << endl;
 		Sleep(delayBetweenSteps);
 		cout << "Proceeding further" << endl;
-	case directions::DIAGONALBACKRIGHT:
+	case minecraftEnums::directions::DIAGONALBACKRIGHT:
 		cout << "MOVING DIAGONALBACKRIGHT" << endl;
 		randomLook();;
 		walkDiagonalBackRight(walkDur, delayBetweenSteps);
 		cout << "Random ended" << endl;
 		Sleep(delayBetweenSteps);
 		cout << "Proceeding further" << endl;
-	case directions::DIAGONALFORWARDLEFT:
+	case minecraftEnums::directions::DIAGONALFORWARDLEFT:
 		cout << "MOVING DIAGONALFORWARDLEFT" << endl;
 		randomLook();;
 		walkDiagonalForwardLeft(walkDur, delayBetweenSteps);
 		cout << "Random ended" << endl;
 		Sleep(delayBetweenSteps);
 		cout << "Proceeding further" << endl;
-	case directions::DIAGONALFORWARDRIGHT:
+	case minecraftEnums::directions::DIAGONALFORWARDRIGHT:
 		cout << "MOVING DIAGONALFORWARDRIGHT" << endl;
 		randomLook();;
 		walkDiagonalForwardRight(walkDur, delayBetweenSteps);
@@ -760,6 +790,20 @@ void minecraft() {
 void AUTTreePunchBot() {
 	system("cls");
 	int amount;
+	char choice;
+	cout << "Include special moves? (Set 'Yes' as default)" << endl;
+	cout << "Enter 'Y' for yes or 'N' for no" << endl;
+	while (1) {
+		AUTvars aut;
+		cin >> choice;
+		if (aut.hasViableInput(choice)) {
+			aut.setEnableSpecs(choice);
+			break;
+		}
+		else {
+			cout << endl<< "Wrong input!" << endl;
+		}
+	}
 	cout << "Enter amount of repeats : ";
 	cin >> amount;
 	cout << "Wait 5 seconds..." << endl;
