@@ -26,6 +26,7 @@ public:
 class AUTvars {
 private:
 	bool enableSpecs = true;
+	bool isForGrinding = true;
 public:
 	vector<char> possibleInputs = { 'Y', 'y', 'N', 'n' };
 	bool hasViableInput(char &input) {
@@ -47,8 +48,65 @@ public:
 			break;
 		}
 	}
-	enum specialMoves {EMove = 0, RMove = 1, TMove = 3, YMove = 4, SPECMOVESCOUNT};
+	void setForGrinding(char input) {
+		switch (input) {
+		case 'Y':
+			isForGrinding = true;
+			break;
+		case 'y':
+			isForGrinding = true;
+			break;
+		case 'N':
+			isForGrinding = false;
+			break;
+		case 'n':
+			isForGrinding = false;
+			break;
+		}
+	}
+	bool isEnabled() {
+		return enableSpecs;
+	}
+	bool isGrinding() {
+		return isForGrinding;
+	}
+	enum specialMoves {EMove = 0, RMove = 1, TMove = 3, YMove = 4, GMove=5, HMove=6, JMove=7, QMove=8, ZMove=9, VMove=10, SPECMOVESCOUNT};
+	enum currentStand {
+		StarPlatinum = 1, MagiciansRed = 2, SilverChariot = 3, Anubis = 4, ShadowDio = 5,
+		KillerQueen = 6, CrazyDiamond = 7, TheHand = 8, GoldExperience = 9, KingCrimson = 10,
+		StickyFingers = 11, WeatherReport = 12, SteelSpin = 13, WonderOfU = 14, D4C = 15,
+		TheWorldHighVoltage = 16, TuskA1 = 17, TheWorld = 18, StarPlatinumTheWorld = 19, GoldExperienceRequiem = 20,
+		CMoon = 21, MadeInHeaven = 22, D4CLoveTrain = 23, TuskA2 = 24, TuskA3 = 25,
+		TuskA4 = 26, TheWorldOverHeaven = 27, SoftAndWet = 28, PlanetShaper = 29, Sol = 30,
+		Nocturnus = 31, ShadowTheWorldRequiem = 32, StarPlatinumRequiem = 33, Xeno = 34, Locke = 35
+	};
+	// energy count coming later
+	// !stand on!
+	// finish later
+	vector<vector<char>> standMovesets = {
+		{'0'},// 0 is none
+		{'E', 'R', 'T',  0 , 'G',  0 ,  0 ,  0 ,  0 ,  0 }, //SP (no cutscenes and timestop abilities)
+		{'E', 'R', 'T', 'Y', 'G',  0 ,  0 ,  0 ,  0 ,  0 }, //MR (no long inputs)
+		{'E', 'R', 'T', 'Y', 'G',  0 ,  0 ,  0 ,  0 ,  0 }, //SC
+		{'E', 'R', 'T', 'Y',  0 ,  0 ,  0 ,  0 ,  0 ,  0 }, //Anubis
+	};
 };
+void keyPress(char keyInput, int duration) {
+	Sleep(50);
+	SHORT key;
+	UINT mappedkey;
+	INPUT input = { 0 };
+	key = keyInput;
+	mappedkey = MapVirtualKey(LOBYTE(key), 0);
+	input.type = INPUT_KEYBOARD;
+	input.ki.dwFlags = KEYEVENTF_SCANCODE;
+	input.ki.wScan = mappedkey;
+	SendInput(1, &input, sizeof(input));
+
+	Sleep(duration);
+	input.ki.dwFlags = KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP;
+	SendInput(1, &input, sizeof(input));
+}
 
 int randomMTInRange(int start, int end) {
 	std::random_device rd; // Obtain a random seed from the OS
@@ -717,6 +775,7 @@ void RandomWalk(int duration, int walkDur, int delayBetweenSteps) {
 	}
 }
 
+// 910 repeats for 8 or 9 or 10 hours
 void minecraft() {
 	system("cls");
 	moveMouse(1000, 1000);
@@ -785,33 +844,90 @@ void minecraft() {
 
 }
 
-// 910 repeats for 8 or 9 or 10 hours
+void specialMovesLoop(char choice) {
+	AUTvars aut;
+	if (aut.isEnabled()) {
+		cout << "Random started" << endl;
 
+		std::mt19937 generator(std::time(nullptr));
+
+		std::uniform_int_distribution<int> distribution(0, static_cast<int>(AUTvars::specialMoves::SPECMOVESCOUNT) - 1);
+
+		AUTvars::specialMoves randMove = static_cast<AUTvars::specialMoves>(distribution(generator));
+		cout << randMove << endl;
+		switch (randMove)
+		{
+		case AUTvars::EMove:
+			keyPress('E', 2000);
+			break;
+		case AUTvars::RMove:
+			keyPress('R', 1000);
+			break;
+		case AUTvars::TMove:
+			keyPress('T', 1000);
+			break;
+		case AUTvars::YMove:
+			keyPress('Y', 1000);
+			break;
+		default:
+			break;
+		}
+	}
+}
 void AUTTreePunchBot() {
 	system("cls");
+	AUTvars aut;
 	int amount;
 	char choice;
-	cout << "Include special moves? (Set 'Yes' as default)" << endl;
+
+	cout << "Is grinding Locaca Tree ? " << endl;
 	cout << "Enter 'Y' for yes or 'N' for no" << endl;
 	while (1) {
-		AUTvars aut;
 		cin >> choice;
 		if (aut.hasViableInput(choice)) {
-			aut.setEnableSpecs(choice);
+			aut.setForGrinding(choice);
 			break;
 		}
 		else {
-			cout << endl<< "Wrong input!" << endl;
+			cout << endl << "Wrong input!" << endl;
 		}
 	}
-	cout << "Enter amount of repeats : ";
-	cin >> amount;
-	cout << "Wait 5 seconds..." << endl;
-	Sleep(5000);
-	for (int i = 0; i < amount; i++) {
-		cout << "Current cycle = " << i << endl;
-		click();
-		Sleep(50);
+
+	if (aut.isGrinding()) {
+		cout << "Include special moves? (Set 'Yes' as default)" << endl;
+		cout << "Enter 'Y' for yes or 'N' for no" << endl;
+		while (1) {
+			cin >> choice;
+			if (aut.hasViableInput(choice)) {
+				aut.setEnableSpecs(choice);
+				break;
+			}
+			else {
+				cout << endl << "Wrong input!" << endl;
+			}
+		}
+		cout << "Enter amount of repeats : ";
+		cin >> amount;
+		cout << "Wait 5 seconds..." << endl;
+		Sleep(5000);
+		for (int i = 0; i < amount; i++) {
+			cout << "Current cycle = " << i << endl;
+			click();
+			Sleep(100);
+			specialMovesLoop(choice);
+			Sleep(50);
+		}
+	}
+	if (!aut.isGrinding()) {
+		cout << "Enter amount of repeats : ";
+		cin >> amount;
+		cout << "Wait 5 seconds..." << endl;
+		Sleep(5000);
+		for (int i = 0; i < amount; i++) {
+			cout << "Current cycle = " << i << endl;
+			RandomWalk(1000, 500, 0);
+			Sleep(50);
+		}
 	}
 }
 void selectBot() {
